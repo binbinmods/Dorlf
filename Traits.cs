@@ -61,6 +61,8 @@ namespace Dorlf
             List<string> heroHand = MatchManager.Instance.GetHeroHand(_character.HeroIndex);
             Hero[] teamHero = MatchManager.Instance.GetTeamHero();
             NPC[] teamNpc = MatchManager.Instance.GetTeamNPC();
+            string traitName = traitData?.TraitName ?? "Missing Trait";
+            string traitId = _trait;
 
             if (!IsLivingHero(_character))
             {
@@ -69,10 +71,11 @@ namespace Dorlf
 
             if (_trait == trait0)
             {
-                // Gain 1 evade at combat start 
-                _character.SetAuraTrait(_character, "evade", 1);
+                // Taunt on you cannot be purged unless specified. At the start of combat, gain 1 Taunt, 1 Reinforce, and 2 Fortify
+                _character.SetAuraTrait(_character, "taunt", 1);
+                _character.SetAuraTrait(_character, "reinforce", 1);
+                _character.SetAuraTrait(_character, "fortify", 2);
             }
-
 
             else if (_trait == trait2a)
             {
@@ -80,16 +83,7 @@ namespace Dorlf
                 // Evasion +1. 
                 // Evasion on you stacks and increases All Damage by 1 per charge. 
                 // When you play a Defense card, gain 1 Energy and Draw 1. (2 times/turn)
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
 
-                if (CanIncrementTraitActivations(traitId) && _castedCard.HasCardType(Enums.CardType.Defense))// && MatchManager.Instance.energyJustWastedByHero > 0)
-                {
-                    LogDebug($"Handling Trait {traitId}: {traitName}");
-                    _character?.ModifyEnergy(1);
-                    DrawCards(1);
-                    IncrementTraitActivations(traitId);
-                }
             }
 
 
@@ -97,31 +91,52 @@ namespace Dorlf
             else if (_trait == trait2b)
             {
                 // trait2b:
-                // Stealth on heroes increases All Damage by an additional 15% per charge and All Resistances by an additional 5% per charge.",
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
+                // Taunt on you can stack up to 10. 
+                // Reduce the cost of your highest cost card by 1 until discarded, repeat for every 2 Taunt on you.
+
+
+                int nIterations = 1 + _character.GetAuraCharges("taunt") / 2;
+                for (int i = 0; i < nIterations; i++)
+                {
+                    CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.None);
+                    if (highestCostCard != null)
+                    {
+                        LogDebug($"Handling Trait {traitId}: {traitName} - Reducing cost of {highestCostCard.CardName} by 1");
+                        ReduceCardCost(ref highestCostCard, _character, 1);
+                    }
+                }
 
             }
 
             else if (_trait == trait4a)
             {
                 // trait 4a;
-                // Evasion on you can't be purged unless specified. 
-                // Stealth grants 25% additional damage per charge.",
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
+                // When you play a Defense, reduce the cost of your highest cost Defense by 3 until discarded. (2 times/turn)
+
+
 
                 LogDebug($"Handling Trait {traitId}: {traitName}");
+                if (CanIncrementTraitActivations(traitId))
+                {
+                    CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.Defense);
+                    if (highestCostCard != null)
+                    {
+                        ReduceCardCost(ref highestCostCard, _character, 3);
+                    }
+                    IncrementTraitActivations(traitId);
+                }
             }
 
             else if (_trait == trait4b)
             {
                 // trait 4b:
-                // Heroes Only lose 75% stealth charges rounding down when acting in stealth.
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
+                // Taunt +1. Taunt on you increases Physical and Lightning damage by 2 per charge. Taunt on you can stack to 15.
+
+
                 LogDebug($"Handling Trait {traitId}: {traitName}");
             }
+
+            DisplayTraitScroll(ref _character, traitData);
 
         }
 
@@ -158,61 +173,70 @@ namespace Dorlf
             string traitOfInterest;
             switch (_acId)
             {
-                // trait2a:
-                // Evasion on you stacks and increases All Damage by 1 per charge. 
+                // trait0:
+                // Taunt on you cannot be purged unless specified. At the start of combat, gain 1 Taunt, 1 Reinforce, and 2 Fortify
 
                 // trait2b:
-                // Stealth on heroes increases All Damage by an additional 15% per charge and All Resistances by an additional 5% per charge.",
-
-                // trait 4a;
-                // Evasion on you can't be purged unless specified. 
-                // Stealth grants 25% additional damage per charge.",
+                // Taunt on you can stack up to 10. Reduce the cost of your highest cost card by 1 until discarded, repeat for every 2 Taunt on you.
 
                 // trait 4b:
-                // Heroes Only lose 75% stealth charges rounding down when acting in stealth.
+                // Taunt +1. Taunt on you increases Physical and Lightning damage by 2 per charge. Taunt on you can stack to 15.
 
-                case "evasion":
-                    traitOfInterest = trait2a;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
-                    {
-                        __result.GainCharges = true;
-                        __result.AuraDamageType = Enums.DamageType.All;
-                        float multiplierAmount = 1.0f;  //characterOfInterest.HaveTrait(trait4a) ? 0.3f : 0.2f;
-                        __result.AuraDamageIncreasedPerStack = multiplierAmount;
-                        // __result.HealDoneTotal = Mathf.RoundToInt(multiplierAmount * characterOfInterest.GetAuraCharges("shield"));
-                    }
-                    traitOfInterest = trait4a;
+                case "taunt":
+                    traitOfInterest = trait0;
                     if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
                     {
                         __result.Removable = false;
                     }
-                    break;
-                case "stealth":
                     traitOfInterest = trait2b;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Heroes))
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
+                    {
+                        __result.GainCharges = true;
+                        __result.MaxCharges = __result.MaxMadnessCharges = 10;
+                    }
+                    traitOfInterest = trait4b;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
+                    {
+                        __result.GainCharges = true;
+                        __result.MaxCharges = __result.MaxMadnessCharges = 15;
+                        __result.AuraDamageType = Enums.DamageType.Slashing;
+                        __result.AuraDamageType2 = Enums.DamageType.Blunt;
+                        __result.AuraDamageType3 = Enums.DamageType.Piercing;
+                        __result.AuraDamageType4 = Enums.DamageType.Lightning;
+                        __result.AuraDamageIncreasedPerStack = __result.AuraDamageIncreasedPerStack2 = __result.AuraDamageIncreasedPerStack3 = __result.AuraDamageIncreasedPerStack4 = 2;
+                    }
+                    break;
+                case "shield":
+                    traitOfInterest = trait2a;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
                     {
                         __result.ResistModified = Enums.DamageType.All;
-                        __result.ResistModifiedPercentagePerStack += 5;
-                        __result.AuraDamageType = Enums.DamageType.All;
-                        __result.AuraDamageIncreasedPercentPerStack += 15;
+                        __result.ResistModifiedPercentagePerStack = 0.2f;
                     }
                     break;
             }
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(Character), "HealAuraCurse")]
-        public static void HealAuraCursePrefix(ref Character __instance, AuraCurseData AC, ref int __state)
+        [HarmonyPatch(typeof(Character), "SetAura")]
+        public static void SetAuraPrefix(
+            Character __instance,
+            Character theCaster,
+            ref AuraCurseData _acData,
+            ref int charges,
+            bool fromTrait = false,
+            Enums.CardClass CC = Enums.CardClass.None,
+            bool useCharacterMods = true,
+            bool canBePreventable = true)
         {
-            LogInfo($"HealAuraCursePrefix {subclassName}");
-            string traitOfInterest = trait4b;
-            if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest) && AC == GetAuraCurseData("stealth"))
+
+            string traitOfInterest = trait2a;
+            if (__instance.HaveTrait(traitOfInterest) && _acData.ACName.ToLower() == "block")
             {
-                __state = Mathf.FloorToInt(__instance.GetAuraCharges("stealth") * 0.25f);
-                // __instance.SetAuraTrait(null, "stealth", 1);
-
+                // LogInfo($"SetAuraPrefix {subclassName}");
+                _acData = Globals.Instance.GetAuraCurseData("shield");
+                charges = Functions.FuncRoundToInt((float)charges * 0.5f);
             }
-
         }
 
         [HarmonyPostfix]

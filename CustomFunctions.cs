@@ -887,10 +887,7 @@ namespace Dorlf
 
         public static void DisplayRemainingChargesForTrait(ref Character _character, TraitData traitData)
         {
-            if (_character.HeroItem != null)
-            {
-                _character.HeroItem.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName, "") + TextChargesLeft(MatchManager.Instance.activatedTraits[traitData.TraitName], traitData.TimesPerTurn), Enums.CombatScrollEffectType.Trait);
-            }
+            _character.HeroItem?.ScrollCombatText(traitData.TraitName + TextChargesLeft(MatchManager.Instance.activatedTraits[traitData.TraitName], traitData.TimesPerTurn), Enums.CombatScrollEffectType.Trait);
         }
 
         /// <summary>
@@ -903,7 +900,7 @@ namespace Dorlf
         {
             if (_character.HeroItem != null)
             {
-                _character.HeroItem.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName, "") + TextChargesLeft(MatchManager.Instance.activatedTraitsRound[traitData.TraitName], traitData.TimesPerRound), Enums.CombatScrollEffectType.Trait);
+                _character.HeroItem.ScrollCombatText(traitData.TraitName + TextChargesLeft(MatchManager.Instance.activatedTraitsRound[traitData.TraitName], traitData.TimesPerRound), Enums.CombatScrollEffectType.Trait);
             }
         }
 
@@ -914,7 +911,7 @@ namespace Dorlf
         /// <param name="traitData"> Trait to display the name of</param>
         public static void DisplayTraitScroll(ref Character _character, TraitData traitData)
         {
-            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName, ""), Enums.CombatScrollEffectType.Trait);
+            _character.HeroItem?.ScrollCombatText(traitData?.TraitName, Enums.CombatScrollEffectType.Trait);
         }
 
         /// <summary>
@@ -925,7 +922,7 @@ namespace Dorlf
 
         public static void DisplayTraitScroll(ref Character _character, string traitName)
         {
-            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitName, ""), Enums.CombatScrollEffectType.Trait);
+            _character.HeroItem?.ScrollCombatText(traitName, Enums.CombatScrollEffectType.Trait);
         }
 
         /// <summary>

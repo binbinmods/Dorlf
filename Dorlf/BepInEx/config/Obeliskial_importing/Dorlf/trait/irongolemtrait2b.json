@@ -23,7 +23,7 @@
     "DamageBonusPercentValue": 0.0,
     "DamageBonusPercentValue2": 0.0,
     "DamageBonusPercentValue3": 0.0,
-    "Description": "Taunt on you can stack up to 10. Reduce the cost of your highest cost card by 1 until discarded..",
+    "Description": "Taunt on you can stack up to 10. Reduce the cost of your highest cost card by 1 until discarded, repeat for every 2 Taunt on you.",
     "HealFlatBonus": 0,
     "HealPercentBonus": 0.0,
     "HealReceivedFlatBonus": 0,

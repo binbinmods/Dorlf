@@ -1,0 +1,15 @@
+{
+    "Card0": "irongolemshieldlaser",
+    "Card1": "steelskin",
+    "Card2": "irongolemshieldcharge",
+    "Card3": "shakeitoff",
+    "Card4": "entrench",
+    "Card5": "",
+    "CardSpecial0": "",
+    "CardSpecial1": "",
+    "PackClass": "warrior",
+    "PackID": "dorlf",
+    "PackName": "Dorlf",
+    "PerkList": [],
+    "RequiredClass": "irongolem"
+}

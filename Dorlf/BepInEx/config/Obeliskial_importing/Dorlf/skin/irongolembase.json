@@ -1,0 +1,15 @@
+{
+    "BaseSkin": true,
+    "PerkLevel": 0,
+    "SkinGO": "skindorlf",
+    "SkinID": "irongolembase",
+    "SkinName": "Default",
+    "SkinOrder": 0,
+    "SkinSubclass": "irongolem",
+    "Sku": "",
+    "SpritePortrait": "dorlfPortrait",
+    "SpritePortraitGrande": "dorlfPortraitGrande",
+    "SpriteSilueta": "dorlfSilueta",
+    "SpriteSiluetaGrande": "dorlfSiluetaGrande",
+    "SteamStat": ""
+}

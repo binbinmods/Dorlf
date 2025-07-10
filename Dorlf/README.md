@@ -1,8 +1,6 @@
 # Dorlf, the Iron Golem
 
-A hero mod, introducing Dorlf, a mage/healer who has been trapped in a mental cage. She goes on a journey to break out but has two very different ways of doing so overcoming the issues in a calm and focused way or forcefully breaking out of the cage through sheer will.
-
-This character was designed by @designer.
+A hero mod, introducing Dorlf, a Warrior that specializes in Taunting, Shielding, Returning Damage, and Resistances
 
 This currently does not include any events or quests related to Dorlf other than those available to all heroes or all heroes of a specific class.
 

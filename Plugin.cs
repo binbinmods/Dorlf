@@ -27,7 +27,7 @@ namespace Dorlf
         public static string characterName = "Dorlf";
         public static string heroName = characterName;
 
-        public static string subclassName = "Iron Golem"; // needs caps
+        public static string subclassName = "IronGolem"; // needs caps
 
         public static string subclassname = subclassName.ToLower();
         public static string itemStem = subclassname;

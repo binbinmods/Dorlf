@@ -113,10 +113,8 @@ namespace Dorlf
                 // trait 4a;
                 // When you play a Defense, reduce the cost of your highest cost Defense by 3 until discarded. (2 times/turn)
 
-
-
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-                if (CanIncrementTraitActivations(traitId))
+                if (CanIncrementTraitActivations(traitId) && _castedCard.HasCardType(Enums.CardType.Defense))
                 {
                     CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.Defense);
                     if (highestCostCard != null)

@@ -92,10 +92,10 @@ namespace Dorlf
             {
                 // trait2b:
                 // Taunt on you can stack up to 10. 
-                // Reduce the cost of your highest cost card by 1 until discarded, repeat for every 2 Taunt on you.
+                // Reduce the cost of your highest cost card by 1 until discarded, repeat for every 3 Taunt on you.
 
 
-                int nIterations = 1 + _character.GetAuraCharges("taunt") / 2;
+                int nIterations = 1 + _character.GetAuraCharges("taunt") / 3;
                 for (int i = 0; i < nIterations; i++)
                 {
                     CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.None);

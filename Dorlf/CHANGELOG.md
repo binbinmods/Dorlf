@@ -1,3 +1,7 @@
+# 0.1.3
+
+Altered base Resists
+
 # 0.1.2
 
 Changed the order of a couple of traits.
